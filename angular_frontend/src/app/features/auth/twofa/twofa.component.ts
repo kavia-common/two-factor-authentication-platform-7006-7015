@@ -6,7 +6,7 @@ import { ApiService } from '../../../core/services/api.service';
 import { AuthService } from '../../../core/services/auth.service';
 
 /**
- * TwoFaComponent verifies TOTP/2FA code using a temporary token from login.
+ * TwoFaComponent verifies code using a challengeId obtained from login.
  */
 @Component({
   selector: 'app-twofa',
@@ -27,15 +27,14 @@ export class TwoFaComponent {
 
   loading = signal(false);
   error = signal<string | null>(null);
-  tempToken = computed(() => this.auth.tempToken);
+  challengeId = computed(() => this.auth.challengeId);
 
   form = this.fb.group({
     code: ['', [Validators.required, Validators.minLength(6), Validators.maxLength(8)]]
   });
 
   ngOnInit() {
-    // If no temp token, redirect back to login.
-    if (!this.tempToken()) {
+    if (!this.challengeId()) {
       this.router.navigateByUrl('/login');
     }
   }
@@ -44,13 +43,13 @@ export class TwoFaComponent {
   submit() {
     /** Submits 2FA code for verification. */
     this.error.set(null);
-    if (this.form.invalid || !this.tempToken()) {
+    if (this.form.invalid || !this.challengeId()) {
       this.form.markAllAsTouched();
       return;
     }
     this.loading.set(true);
     const { code } = this.form.getRawValue();
-    this.api.verify2fa({ code: code!, tempToken: this.tempToken()! }).subscribe({
+    this.api.verify2fa({ code: code!, challengeId: this.challengeId()! }).subscribe({
       next: (res) => {
         if (res.token) {
           this.auth.setToken(res.token);

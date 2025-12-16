@@ -5,36 +5,45 @@ import morgan from 'morgan';
 import cookieParser from 'cookie-parser';
 import { authRouter } from './views/auth.routes.js';
 import { InMemoryDB } from './db/index.js';
+import { rateLimiter } from './utils/rateLimiter.js';
 
 export function createServer() {
   const app = express();
 
-  // Trust proxy if running behind proxies (configurable via env if needed)
   if (process.env.NG_APP_TRUST_PROXY === 'true') {
     app.set('trust proxy', 1);
   }
 
-  // Middlewares
+  // Security and parsers
   app.use(helmet());
-  app.use(express.json());
+  app.use(express.json({ limit: '100kb' }));
   app.use(cookieParser());
+
+  // CORS from env FRONTEND_URL
+  const allowedOrigin = process.env.FRONTEND_URL || '*';
   app.use(
     cors({
-      origin: process.env.FRONTEND_URL || '*',
-      credentials: true
+      origin: allowedOrigin,
+      credentials: true,
+      methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+      allowedHeaders: ['Content-Type', 'Authorization']
     })
   );
 
+  // Logging
   const logLevel = process.env.NG_APP_LOG_LEVEL || 'dev';
   app.use(morgan(logLevel));
 
-  // Simple health check
+  // Healthcheck
   const healthPath = process.env.NG_APP_HEALTHCHECK_PATH || '/healthz';
   app.get(healthPath, (_req, res) => {
     res.json({ status: 'ok', uptime: process.uptime() });
   });
 
-  // Attach DB to request context
+  // Rate limiting (basic, IP-based)
+  app.use(rateLimiter());
+
+  // Attach DB to request
   app.use((req: Request & { db?: InMemoryDB }, _res: Response, next: NextFunction) => {
     req.db = db;
     next();
@@ -42,6 +51,11 @@ export function createServer() {
 
   // Routes
   app.use('/auth', authRouter);
+
+  // 404
+  app.use((req, res) => {
+    res.status(404).json({ message: 'Not Found' });
+  });
 
   // Error handler
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -53,5 +67,4 @@ export function createServer() {
   return app;
 }
 
-// Global singleton in-memory DB for the app lifecycle
 export const db = new InMemoryDB();

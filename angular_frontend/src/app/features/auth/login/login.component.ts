@@ -46,8 +46,8 @@ export class LoginComponent {
     const { email, password } = this.form.getRawValue();
     this.api.login({ email: email!, password: password! }).subscribe({
       next: (res) => {
-        if (res.requires2fa && res.tempToken) {
-          this.auth.setTempToken(res.tempToken);
+        if (res.requires2fa && res.challengeId) {
+          this.auth.setChallengeId(res.challengeId);
           this.router.navigateByUrl('/2fa');
         } else if (res.token) {
           this.auth.setToken(res.token);

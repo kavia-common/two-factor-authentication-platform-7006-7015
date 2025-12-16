@@ -5,8 +5,8 @@ import { Observable } from 'rxjs';
 
 // PUBLIC_INTERFACE
 export interface LoginResponse {
-  requires2fa: boolean;
-  tempToken?: string; // temporary token if 2FA required
+  requires2fa?: boolean;
+  challengeId?: string; // challenge id when 2FA required
   token?: string; // final JWT if 2FA not required
   message?: string;
 }
@@ -14,6 +14,12 @@ export interface LoginResponse {
 // PUBLIC_INTERFACE
 export interface Verify2FAResponse {
   token: string;
+  message?: string;
+}
+
+// PUBLIC_INTERFACE
+export interface Resend2FAResponse {
+  ok: boolean;
   message?: string;
 }
 
@@ -32,8 +38,14 @@ export class ApiService {
   }
 
   // PUBLIC_INTERFACE
-  verify2fa(payload: { code: string; tempToken: string }): Observable<Verify2FAResponse> {
-    /** Verifies 2FA with a temp token and returns a final JWT. */
-    return this.http.post<Verify2FAResponse>(`${this.baseUrl}/auth/verify-2fa`, payload);
+  verify2fa(payload: { challengeId: string; code: string }): Observable<Verify2FAResponse> {
+    /** Verifies 2FA using challenge id and returns a final JWT. */
+    return this.http.post<Verify2FAResponse>(`${this.baseUrl}/auth/2fa/verify`, payload);
+  }
+
+  // PUBLIC_INTERFACE
+  resend2fa(payload: { challengeId: string }): Observable<Resend2FAResponse> {
+    /** Requests a resend/regeneration of the 2FA code for the given challenge. */
+    return this.http.post<Resend2FAResponse>(`${this.baseUrl}/auth/2fa/resend`, payload);
   }
 }
