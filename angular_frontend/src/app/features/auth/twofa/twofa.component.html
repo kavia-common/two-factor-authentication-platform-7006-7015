@@ -1,0 +1,29 @@
+<div class="auth-shell">
+  <div class="auth-card">
+    <div class="brand">
+      <div class="dot"></div>
+      <h1>Two-Factor Verification</h1>
+    </div>
+    <p class="subtitle">Enter the 6-digit code from your authenticator app</p>
+
+    <form [formGroup]="form" (ngSubmit)="submit()" novalidate>
+      <div class="w-100 field">
+        <label for="code">Authentication code</label>
+        <input id="code" class="input" placeholder="123 456" formControlName="code" inputmode="numeric" />
+        <small class="error" *ngIf="form.controls.code.touched && form.controls.code.hasError('required')">Code is required</small>
+        <small class="error" *ngIf="form.controls.code.touched && form.controls.code.hasError('minlength')">Code must be at least 6 digits</small>
+      </div>
+
+      <div *ngIf="error()" style="color:#EF4444; font-size: 13px; margin-bottom: 10px;">
+        {{ error() }}
+      </div>
+
+      <div class="action-row">
+        <a routerLink="/login" class="link">Back to sign in</a>
+        <button class="primary" [disabled]="loading()">
+          {{ loading() ? 'Verifying…' : 'Verify' }}
+        </button>
+      </div>
+    </form>
+  </div>
+</div>

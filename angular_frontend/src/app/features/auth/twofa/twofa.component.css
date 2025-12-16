@@ -1,0 +1,7 @@
+.w-100 { width: 100%; }
+form { display: grid; gap: 16px; }
+.action-row { margin-top: 8px; }
+.primary { background: var(--color-primary); color: #fff; border: none; padding: 10px 16px; border-radius: 10px; cursor: pointer; }
+.input { padding: 10px 12px; border: 1px solid #e5e7eb; border-radius: 10px; }
+.field { display: grid; gap: 6px; }
+.error { color: var(--color-error); font-size: 12px; }
