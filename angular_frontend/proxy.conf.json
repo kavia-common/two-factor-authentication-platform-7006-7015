@@ -1,0 +1,9 @@
+{
+  "$schema": "https://json.schemastore.org/proxyrc",
+  "/auth": {
+    "target": "http://localhost:7006",
+    "secure": false,
+    "changeOrigin": true,
+    "logLevel": "info"
+  }
+}

@@ -8,8 +8,9 @@
   <link rel="icon" type="image/x-icon" href="favicon.ico">
   <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
   <script>
-    // Expose API base for client-side; server-side uses process.env
+    // Expose API base and optional frontend URL for client-side; SSR uses process.env
     window.NG_APP_API_BASE = (window.NG_APP_API_BASE || '');
+    window.NG_APP_FRONTEND_URL = (window.NG_APP_FRONTEND_URL || '');
   </script>
 </head>
 <body>

@@ -19,8 +19,12 @@ export function createServer() {
   app.use(express.json({ limit: '100kb' }));
   app.use(cookieParser());
 
-  // CORS from env FRONTEND_URL
-  const allowedOrigin = process.env.FRONTEND_URL || '*';
+  // CORS from env FRONTEND_URL / NG_APP_FRONTEND_URL; default '*' for dev and proxy
+  const allowedOrigin =
+    process.env.NG_APP_FRONTEND_URL ||
+    process.env.FRONTEND_URL ||
+    '*';
+
   app.use(
     cors({
       origin: allowedOrigin,

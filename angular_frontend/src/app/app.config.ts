@@ -5,17 +5,12 @@ import { provideHttpClient, withInterceptors } from '@angular/common/http';
 
 import { routes } from './app.routes';
 import { authInterceptor } from './core/interceptors/auth.interceptor';
+import { env } from '../environments';
 import { getWindow } from './core/utils/platform';
 
 // PUBLIC_INTERFACE
 export const API_BASE_URL = new InjectionToken<string>('API_BASE_URL', {
-  factory: () => {
-    const w = getWindow<any>();
-    if (w && typeof w.NG_APP_API_BASE === 'string') {
-      return w.NG_APP_API_BASE as string;
-    }
-    return process.env['NG_APP_API_BASE'] || '';
-  }
+  factory: () => env.getApiBase()
 });
 
 export const appConfig: ApplicationConfig = {
@@ -25,12 +20,6 @@ export const appConfig: ApplicationConfig = {
     provideClientHydration(withEventReplay()),
     provideHttpClient(withInterceptors([authInterceptor])),
     { provide: PLATFORM_ID, useValue: typeof globalThis !== 'undefined' ? (globalThis as any)['ngPlatformId'] ?? 'browser' : 'server' },
-    { provide: API_BASE_URL, useFactory: () => {
-      const w = getWindow<any>();
-      if (w && typeof w.NG_APP_API_BASE === 'string') {
-        return w.NG_APP_API_BASE as string;
-      }
-      return process.env['NG_APP_API_BASE'] || '';
-    } }
+    { provide: API_BASE_URL, useFactory: () => env.getApiBase() }
   ]
 };
