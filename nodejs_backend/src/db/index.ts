@@ -8,11 +8,13 @@ export class InMemoryDB {
   challenges = new Map<string, TwoFaChallenge>();
 
   constructor() {
-    // Seed with a demo user (password: password123, 2FA enabled)
+    // Seed with a demo user (password: "password123", 2FA enabled).
+    // NOTE: This is intentionally plaintext for the demo. AuthService.login compares plaintext.
+    // If switching to bcrypt, update both seeding (hash) and AuthService.login (compare).
     const demo: User = {
       id: 'user_1',
       email: 'user@example.com',
-      passwordHash: 'password123', // In real app, use bcrypt; for demo only
+      passwordHash: 'password123', // DEMO ONLY
       twoFaEnabled: true,
       twoFaSecret: 'DEMO-SECRET' // For demo, not TOTP-validated here
     };

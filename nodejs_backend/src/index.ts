@@ -4,8 +4,16 @@ import { createServer } from './server.js';
 async function bootstrap() {
   const app = createServer();
   const port = Number(process.env.BACKEND_PORT || 7006);
+
   const server = app.listen(port, () => {
+    const origin =
+      process.env.NG_APP_FRONTEND_URL ||
+      process.env.FRONTEND_URL ||
+      '*';
+    const health = process.env.NG_APP_HEALTHCHECK_PATH || '/healthz';
     console.log(`[nodejs_backend] Listening on http://0.0.0.0:${port}`);
+    console.log(`[nodejs_backend] CORS allowed origin: ${origin}`);
+    console.log(`[nodejs_backend] Healthcheck: GET ${health}`);
   });
 
   const shutdown = (signal: string) => {

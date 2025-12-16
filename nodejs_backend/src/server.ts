@@ -38,6 +38,11 @@ export function createServer() {
   const logLevel = process.env.NG_APP_LOG_LEVEL || 'dev';
   app.use(morgan(logLevel));
 
+  console.log(
+    `[nodejs_backend] createServer initialized. Using CORS origin="${allowedOrigin}". ` +
+      `When using Angular dev proxy, origin does not apply to browser calls.`
+  );
+
   // Healthcheck
   const healthPath = process.env.NG_APP_HEALTHCHECK_PATH || '/healthz';
   app.get(healthPath, (_req, res) => {
