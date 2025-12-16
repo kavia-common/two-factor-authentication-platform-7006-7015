@@ -45,6 +45,10 @@ export class AuthService {
         code: '123456',
         expiresAt: Date.now() + 5 * 60 * 1000
       });
+      // DEMO LOG: show challenge for testing
+      console.log(
+        `[auth] 2FA challenge created for ${user.email} -> challengeId=${challengeId}, code=123456, expiresIn=5m`
+      );
       return { requires2fa: true, challengeId };
     }
 
@@ -77,12 +81,17 @@ export class AuthService {
       throw err;
     }
     if (challenge.code !== code) {
+      // DEMO LOG: invalid code attempt
+      console.warn(
+        `[auth] 2FA invalid code for challengeId=${challenge.id}. Provided=${code}, expected=123456`
+      );
       const err: any = new Error('Invalid 2FA code');
       err.status = 401;
       throw err;
     }
 
     const token = this.signJWT({ sub: challenge.userId });
+    console.log(`[auth] 2FA verified for challengeId=${challenge.id}, userId=${challenge.userId}`);
     await this.sessions.create({
       id: nanoid(18),
       userId: challenge.userId,

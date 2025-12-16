@@ -36,6 +36,9 @@ export class TwoFaComponent {
   ngOnInit() {
     if (!this.challengeId()) {
       this.router.navigateByUrl('/login');
+    } else {
+      // DEMO LOG: Helpful during manual testing to confirm the flow
+      console.log('[2FA] Active challengeId:', this.challengeId());
     }
   }
 
